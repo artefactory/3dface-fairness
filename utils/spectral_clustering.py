@@ -22,8 +22,16 @@ from utils.basel_face_region_extraction import extract_region_mesh
 from utils.visualisation import plot_clusters_from_path
 
 
+N_SCANS = 100
+
+
+def _template_region_path(method_name, face_region):
+    return f"data/3dmm_regions/{method_name}/template_{face_region}.obj"
+
+
 def calculate_spectral_decomposition(diff_error_maps, face_region, n_eig=512, method_name='basel'):
-    template_region = trimesh.load(f"data/3dmm_regions/{method_name}/template_{face_region}.obj", process=False)
+    """Project curvature-error maps into Laplace-Beltrami spectral space."""
+    template_region = trimesh.load(_template_region_path(method_name, face_region), process=False)
     vertices = np.array(template_region.vertices)
     faces = np.array(template_region.faces)
 
@@ -40,14 +48,16 @@ def calculate_spectral_decomposition(diff_error_maps, face_region, n_eig=512, me
 
 
 def mean_curvature_integral(H, M):
+    """Compute area-weighted absolute mean curvature integral."""
     area = M.diagonal()
     H_mean = np.sum(np.abs(H) * area) / np.sum(area)
     return H_mean
 
 
 def calculate_mean_curvature_integral(diff_curvature_maps, evecs, spectral_coefs, face_region, 
-                                      reconstruction_data_path='data/direct_beta_id_optimisation', 
                                       method_name='basel'):
+    """Compute per-scan curvature integral in spatial and spectral spaces."""
+    reconstruction_data_path = f'data/{method_name}/reconstructions'
     fname = f'data/results/{method_name}/curvature_maps/{face_region}/{face_region}_h_mean.npy'
     fname_sp = f'data/results/{method_name}/curvature_maps/{face_region}/{face_region}_h_mean_sp.npy'
 
@@ -56,11 +66,10 @@ def calculate_mean_curvature_integral(diff_curvature_maps, evecs, spectral_coefs
         h_mean_sp = np.load(f'data/results/{method_name}/curvature_maps/{face_region}/{face_region}_h_mean_sp.npy')
         return h_mean, h_mean_sp
 
-    n_scans = 100
     h_mean = []
     h_mean_sp = []
 
-    for subject_id in range(1, n_scans+1):
+    for subject_id in range(1, N_SCANS + 1):
         mesh_rec_path = os.path.join(reconstruction_data_path, str(subject_id), 'final_face.obj') # 3DMM reconstruction
         mesh_rec = trimesh.load(mesh_rec_path, process=False)
         region_mesh, _ = extract_region_mesh(mesh_rec, face_region, model_name=method_name)
@@ -82,8 +91,9 @@ def calculate_mean_curvature_integral(diff_curvature_maps, evecs, spectral_coefs
 
 
 def get_age_error_correlation_statistics(diff_curvature_maps, evecs, spectral_coefs, face_region, 
-                                         reconstruction_data_path='data/direct_beta_id_optimisation', 
                                          method_name='basel', df_attributes_path='data/realy_attributes.csv'):
+    """Print/plot age correlation statistics for curvature-based reconstruction error."""
+    reconstruction_data_path = f'data/{method_name}/reconstructions'
     h_mean, h_mean_sp = calculate_mean_curvature_integral(diff_curvature_maps, evecs, spectral_coefs, face_region, reconstruction_data_path, method_name)
 
     df = pd.read_csv(df_attributes_path)
@@ -152,6 +162,7 @@ def get_age_error_correlation_statistics(diff_curvature_maps, evecs, spectral_co
 
 
 def calculate_optimal_n_clusters(spectral_coefs):
+    """Plot elbow and silhouette curves for k-means model selection."""
     wcss = []
     k_range = range(1, 15)
 
@@ -182,10 +193,12 @@ def calculate_optimal_n_clusters(spectral_coefs):
 
 def cluster_curvature_maps(n_clusters, diff_curvature_maps, spectral_coefs, evecs, face_region, 
                            df_attributes_path='data/realy_attributes.csv', 
-                           reconstruction_data_path='data/direct_beta_id_optimisation', 
-                           method_name='basel', n_eig_vis=50):
+                           method_name='basel', n_eig_vis=50,
+                           realy_images_path='data/REALY/REALY_benchmark/REALY_image/crop_image_frontal_512x512'):
+    """Cluster spectral coefficients and visualize cluster-level mean maps."""
+    reconstruction_data_path = f'data/{method_name}/reconstructions'
     df = pd.read_csv(df_attributes_path)
-    template_region = trimesh.load(f"data/3dmm_regions/{method_name}/template_{face_region}.obj", process=False)
+    template_region = trimesh.load(_template_region_path(method_name, face_region), process=False)
 
     kmeans = KMeans(n_clusters=n_clusters, random_state=0).fit(spectral_coefs)
     clusters_kmeans = kmeans.predict(spectral_coefs)
@@ -254,7 +267,7 @@ def cluster_curvature_maps(n_clusters, diff_curvature_maps, spectral_coefs, evec
         plt.show() # Or plt.savefig(...)
 
     plot_clusters_from_path(
-        '/Users/veronika.shilova/Desktop/REALY/REALY_benchmark/REALY_image/crop_image_frontal_512x512',
+        realy_images_path,
         clusters_kmeans,
         max_cols=4,
         base_figsize_per_image=2,
@@ -268,6 +281,7 @@ def cluster_curvature_maps(n_clusters, diff_curvature_maps, spectral_coefs, evec
 
 
 def get_ethnicity_error_correlation_statistics(cluster_lables, face_region, df_attributes_path='data/realy_attributes.csv'):
+    """Visualize ethnicity distributions across discovered error clusters."""
     df = pd.read_csv(df_attributes_path)
     rows = []
 
@@ -280,32 +294,22 @@ def get_ethnicity_error_correlation_statistics(cluster_lables, face_region, df_a
 
     df_heatmap = pd.DataFrame(rows).fillna(0).set_index("cluster").astype(int)
     df_heatmap_sorted = df_heatmap.sort_values(by=['Asian', 'Indian', 'African'], ascending=False)
-    # --- 1. RAW COUNTS ---
-    # Shows the actual number of individuals in each category
     plt.figure(figsize=(10, 6))
     sns.heatmap(df_heatmap_sorted, annot=True, cmap="coolwarm", fmt="g")
     plt.title("Raw Counts: Ethnicities per Error Cluster")
     plt.ylabel(f"Error Cluster @{face_region}")
     plt.show()
 
-    # --- 2. NORMALIZE BY COLUMN (Ethnicity) ---
-    # Question: "Of all Asian people, what % are in Cluster 4?"
     df_col_norm = df_heatmap.div(df_heatmap.sum(axis=0), axis=1)
-    # Sorting to maintain your diagonal look
     df_col_sorted = df_col_norm.sort_values(by=['Asian', 'Indian', 'African'], ascending=False)
-
     plt.figure(figsize=(10, 6))
     sns.heatmap(df_col_sorted, annot=True, cmap="coolwarm", fmt=".2f")
     plt.title("Column Normalized: Distribution of each Ethnicity across Clusters")
     plt.ylabel(f"Error Cluster @{face_region}")
     plt.show()
 
-    # --- 3. NORMALIZE BY ROW (Cluster) ---
-    # Question: "Of everyone in Cluster 4, what % are Asian vs. White?"
-    # We divide by the sum of the row (axis=1) across the index (axis=0)
     df_row_norm = df_heatmap.div(df_heatmap.sum(axis=1), axis=0)
     df_row_sorted = df_row_norm.sort_values(by=['Asian', 'Indian', 'African'], ascending=False)
-
     plt.figure(figsize=(10, 6))
     sns.heatmap(df_row_sorted, annot=True, cmap="coolwarm", fmt=".2f")
     plt.title("Row Normalized: Ethnic Composition of each Cluster")
