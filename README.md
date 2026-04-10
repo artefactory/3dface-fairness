@@ -20,19 +20,14 @@ git clone git@github.com:artefactory/face-recon-fairness.git
 cd face-recon-fairness
 ```
 
-2. **Create a virtual environment**
+2. **Create and activate your virtual environment**
 
 ```bash
 python3 -m venv .venv
-```
-
-3. **Activate the virtual environment**
-
-```bash
 source .venv/bin/activate
 ```
 
-4. **Install dependencies**
+3. **Install dependencies**
 
 ```bash
 pip install -r requirements.txt
