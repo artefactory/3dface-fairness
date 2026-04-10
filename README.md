@@ -13,23 +13,40 @@ This project provides a compact pipeline to:
 
 ## Installation
 
-Create a virtual environment and install dependencies:
+1. **Clone the repository**
+
+```bash
+git clone git@github.com:artefactory/face-recon-fairness.git
+cd face-recon-fairness
+```
+
+2. **Create a virtual environment**
 
 ```bash
 python3 -m venv .venv
+```
+
+3. **Activate the virtual environment**
+
+```bash
 source .venv/bin/activate
-pip install numpy scipy pandas trimesh matplotlib seaborn scikit-learn tqdm robust-laplacian Pillow
+```
+
+4. **Install dependencies**
+
+```bash
+pip install -r requirements.txt
 ```
 
 ## Data Preparation
 
-* In order to use our evaluation pipeline, you need an access to REALY benchmark. Please sign the [Agreement](https://www-users.york.ac.uk/~np7/research/Headspace/) and indicate the usage of REALY benchmark according to their guideline, then you will get the permission to download the data.
+1. In order to use our evaluation pipeline, you need an access to REALY benchmark. Please sign the [Agreement](https://www-users.york.ac.uk/~np7/research/Headspace/) and indicate the usage of REALY benchmark according to their guideline, then you will get the permission to download the data.
 
-* Unzip the benchmark file and put "REALY_scan_region/", "REALY_image/" and "REALY_HIFI3D_keypoints/" folders into "data/REALY".
+2. Unzip the benchmark file and put "REALY_scan_region/", "REALY_image/" and "REALY_HIFI3D_keypoints/" folders into "data/REALY".
 
-* Use the images in the "REALY_image/" folder to reconstruct 3D meshes with your method(s).
+3. Use the images in the "REALY_image/" folder to reconstruct 3D meshes with your method(s).
 
-* Save reconstructed meshes as "\*.obj", where "\*" should have the same name as input images from REALY benchmark.
+4. Save reconstructed meshes as "\*.obj", where "\*" should have the same name as input images from REALY benchmark.
 
 ## Quick Usage
 

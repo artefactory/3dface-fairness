@@ -1,0 +1,11 @@
+numpy
+pandas
+scipy
+trimesh
+tqdm
+matplotlib
+seaborn
+scikit-learn
+robust-laplacian
+Pillow
+jupyter
