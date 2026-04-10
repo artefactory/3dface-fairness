@@ -1,8 +1,6 @@
 This repository contains the code and experiments accompanying our paper:
 
-"Discovering Geometric Biases in 3D Face Reconstruction: A Curvature-Aware Spectral Framework for Fairness Evaluation"
-
-Utilities for analyzing fairness-related error patterns in 3D face reconstruction using curvature maps, spectral decomposition, and clustering.
+***"Discovering Geometric Biases in 3D Face Reconstruction: A Curvature-Aware Spectral Framework for Fairness Evaluation"***
 
 ## Overview
 
@@ -25,13 +23,13 @@ pip install numpy scipy pandas trimesh matplotlib seaborn scikit-learn tqdm robu
 
 ## Data Preparation
 
-* In order to use our evaluation pipeline, you need to an access to REALY benchmark. Please sign the [Agreement](https://www-users.york.ac.uk/~np7/research/Headspace/) and indicate the usage of REALY benchmark according to their guideline, then you will get the permission to download the data.
+* In order to use our evaluation pipeline, you need an access to REALY benchmark. Please sign the [Agreement](https://www-users.york.ac.uk/~np7/research/Headspace/) and indicate the usage of REALY benchmark according to their guideline, then you will get the permission to download the data.
 
 * Unzip the benchmark file and put "REALY_scan_region/", "REALY_image/" and "REALY_HIFI3D_keypoints/" folders into "data/REALY".
 
 * Use the images in the "REALY_image/" folder to reconstruct 3D meshes with your method(s).
 
-* Save reconstructed meshes as "*.obj", where "*" should have the same name as input images from REALY benchmark.
+* Save reconstructed meshes as "\*.obj", where "\*" should have the same name as input images from REALY benchmark.
 
 ## Quick Usage
 
