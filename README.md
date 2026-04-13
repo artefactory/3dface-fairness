@@ -45,7 +45,7 @@ pip install -r requirements.txt
 
 ## Quick Usage
 
-Example: compute curvature maps for a given face region:
+# Example: compute curvature maps for a given face region:
 
 ```python
 from utils.curvature_calculation import calculate_curvature_maps
@@ -53,8 +53,8 @@ from utils.curvature_calculation import calculate_curvature_maps
 H_gt, H_rec, H_diff = calculate_curvature_maps(
     face_region="nose",
     template_name='basel',
-    reconstruction_data_path, # path to 3D meshes reconstructed with your method
-    save_path,
+    reconstruction_data_path=reconstruction_data_path, # path to 3D meshes reconstructed with your method
+    save_path=save_path,
     n_neighbors=3,
     curvature_plot_save=False,
 )
@@ -62,9 +62,9 @@ H_gt, H_rec, H_diff = calculate_curvature_maps(
 
 Ground truth and reconstruction mean curvature maps and differences between them will be saved to "<save_path>" folder.
 
-\[Optional\] If you put "curvature_plot_save=True", plots of ground truth and reconstruction mean curvatures and difference between them will be saved to "<save_path>/plots/<face_region>" for a given face region.
+\[Optional\] If you put "curvature_plot_save=True", plots of ground truth and reconstruction mean curvature maps and differences between them will be saved to "<save_path>/plots" for a given face region.
 
-Example: spectral decomposition and clustering:
+# Example: spectral decomposition and clustering:
 
 ```python
 from utils.spectral_clustering import (
