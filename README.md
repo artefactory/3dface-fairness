@@ -49,7 +49,10 @@ Here is a short example of how to calculate curvature-based error maps @nose and
 
 ```python
 from utils.curvature_calculation import calculate_curvature_maps
-from utils.spectral_clustering import calculate_spectral_decomposition, cluster_curvature_maps
+from utils.spectral_clustering import (
+    calculate_spectral_decomposition,
+    cluster_curvature_maps,
+)
 
 # Compute curvature maps for a given face region
 H_gt, H_rec, H_diff = calculate_curvature_maps(
