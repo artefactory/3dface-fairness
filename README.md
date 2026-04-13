@@ -8,7 +8,7 @@ This project provides a compact pipeline to:
 
 - extract specific face regions from reconstructed 3D meshes,
 - compute and compare mean-curvature maps between reconstruction and ground truth,
-- project curvature-error maps into a spectral basis,
+- project curvature-error maps into Laplace-Beltrami spectral basis,
 - cluster reconstruction error patterns and inspect demographic correlations.
 
 ## Installation
