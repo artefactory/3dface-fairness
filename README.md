@@ -45,7 +45,7 @@ pip install -r requirements.txt
 
 ## Quick Usage
 
-### Example: compute curvature maps for a given face region:
+# Example: compute curvature maps for a given face region:
 
 ```python
 from utils.curvature_calculation import calculate_curvature_maps
@@ -64,7 +64,7 @@ Ground truth and reconstruction mean curvature maps and differences between them
 
 \[Optional\] If you put "curvature_plot_save=True", plots of ground truth and reconstruction mean curvature maps and differences between them will be saved to "<save_path>/plots" for a given face region.
 
-### Example: spectral decomposition and clustering:
+# Example: spectral decomposition and clustering:
 
 ```python
 from utils.spectral_clustering import (
