@@ -52,14 +52,19 @@ from utils.curvature_calculation import calculate_curvature_maps
 
 H_gt, H_rec, H_diff = calculate_curvature_maps(
     face_region="nose",
+    template_name='basel',
+    reconstruction_data_path, # path to 3D meshes reconstructed with your method
+    save_path,
     n_neighbors=3,
-    reconstruction_data_path="data/direct_beta_id_optimisation",
-    realy_data_path="/path/to/REALY_scan_region",
-    method_name="basel",
+    curvature_plot_save=False,
 )
 ```
 
-Example: spectral decomposition + clustering:
+Ground truth and reconstruction mean curvature maps and differences between them will be saved to "<save_path>" folder.
+
+\[Optional\] If you put "curvature_plot_save=True", plots of ground truth and reconstruction mean curvatures and difference between them will be saved to "<save_path>/plots/<face_region>" for a given face region.
+
+Example: spectral decomposition and clustering:
 
 ```python
 from utils.spectral_clustering import (
