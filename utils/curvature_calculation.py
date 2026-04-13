@@ -7,10 +7,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
-from utils.basel_face_region_extraction import extract_region_mesh
+from utils.face_region_extraction import extract_region_mesh
 
 
 N_SCANS = 100
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+REALY_PATH = os.path.join(PROJECT_ROOT, "data", "REALY", "REALY_scan_region")
 
 
 def k_ring_neighbors(mesh, vertex_index, k):
@@ -106,15 +108,15 @@ def _interpolate_gt_values_to_reconstruction(mesh_gt, values_gt, mesh_rec):
     return np.sum(bary * vertex_scalars, axis=1)
 
 
-def save_curvature_plot(
+def _save_curvature_plot(
     mesh_gt,
     mesh_rec,
     gt_curvature_map,
     rec_curvature_map,
     diff_curvature_map,
     face_region,
-    img_name,
-    method_name="basel",
+    subject_id,
+    save_path,
 ):
     """Save side-by-side GT / reconstruction / difference curvature visualizations."""
     combined = np.concatenate([gt_curvature_map, rec_curvature_map])
@@ -164,33 +166,33 @@ def save_curvature_plot(
         sm = plt.cm.ScalarMappable(cmap=cmap_name, norm=plt.Normalize(vmin=c_min, vmax=c_max))
         plt.colorbar(sm, ax=ax, shrink=0.5, aspect=15)
 
-    fig.suptitle("Symmetric Mean Curvature Comparison", fontsize=26, y=0.88)
+    fig.suptitle("Mean Curvature Comparison", fontsize=26, y=0.88)
 
-    img_path = f"data/results/{method_name}/curvature_maps/{face_region}/plots"
+    img_path = os.path.join(save_path, f"plots/{face_region}")
     os.makedirs(img_path, exist_ok=True)
-    plt.savefig(os.path.join(img_path, f"{img_name}.jpg"), bbox_inches="tight", dpi=100)
+    plt.savefig(os.path.join(img_path, f"{subject_id}.jpg"), bbox_inches="tight", dpi=100)
     plt.close(fig)
 
 
 def calculate_curvature_maps(
     face_region,
+    template_name,
+    reconstruction_path,
+    save_path,
     n_neighbors=3,
-    realy_data_path="data/REALY/REALY_benchmark/REALY_scan_region",
-    method_name="basel",
+    curvature_plot_save=False,
 ):
     """Compute GT, reconstruction, and difference mean-curvature maps for all scans."""
-    reconstruction_data_path = f'data/{method_name}/reconstructions'
-
     mean_curvature_maps = []
     mean_rec_curvature_maps = []
     diff_mean_curvature_maps = []
 
     for subject_id in tqdm(range(1, N_SCANS + 1)):
-        mesh_rec_path = os.path.join(reconstruction_data_path, str(subject_id), "final_face.obj")
-        mesh_gt_path = os.path.join(realy_data_path, str(subject_id), f"{face_region}.obj")
+        mesh_rec_path = os.path.join(reconstruction_path, str(subject_id), "final_face.obj")
+        mesh_gt_path = os.path.join(REALY_PATH, str(subject_id), f"{face_region}.obj")
 
         mesh_rec = trimesh.load(mesh_rec_path, process=False)
-        mesh_region, _ = extract_region_mesh(mesh_rec, face_region, model_name=method_name)
+        mesh_region, _ = extract_region_mesh(mesh_rec, face_region, template_name=template_name)
         mesh_gt = trimesh.load(mesh_gt_path, process=False)
 
         H = _compute_mean_curvature(mesh_gt, n_neighbors)
@@ -198,7 +200,8 @@ def calculate_curvature_maps(
         interpolated_values = _interpolate_gt_values_to_reconstruction(mesh_gt, H, mesh_region)
         diff = H_rec - interpolated_values
 
-        save_curvature_plot(mesh_gt, mesh_region, H, H_rec, diff, face_region, subject_id, method_name)
+        if curvature_plot_save:
+            _save_curvature_plot(mesh_gt, mesh_region, H, H_rec, diff, face_region, subject_id, save_path)
 
         mean_curvature_maps.append(interpolated_values)
         mean_rec_curvature_maps.append(H_rec)
@@ -207,11 +210,10 @@ def calculate_curvature_maps(
     mean_curvature_maps = np.array(mean_curvature_maps)
     mean_rec_curvature_maps = np.array(mean_rec_curvature_maps)
     diff_mean_curvature_maps = np.array(diff_mean_curvature_maps)
-
-    path = f"data/results/{method_name}/curvature_maps/{face_region}/"
-    os.makedirs(path, exist_ok=True)
-    np.save(os.path.join(path, f"{face_region}_curvature_maps_gt.npy"), mean_curvature_maps)
-    np.save(os.path.join(path, f"{face_region}_curvature_maps_rec.npy"), mean_rec_curvature_maps)
-    np.save(os.path.join(path, f"{face_region}_curvature_maps_diff.npy"), diff_mean_curvature_maps)
+    
+    os.makedirs(save_path, exist_ok=True)
+    np.save(os.path.join(save_path, f"{face_region}_curvature_maps_gt.npy"), mean_curvature_maps)
+    np.save(os.path.join(save_path, f"{face_region}_curvature_maps_rec.npy"), mean_rec_curvature_maps)
+    np.save(os.path.join(save_path, f"{face_region}_curvature_maps_diff.npy"), diff_mean_curvature_maps)
 
     return mean_curvature_maps, mean_rec_curvature_maps, diff_mean_curvature_maps
