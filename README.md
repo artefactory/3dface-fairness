@@ -4,6 +4,8 @@ This repository contains the code and experiments accompanying our paper:
 
 ## Overview
 
+![](./images/overview-figure.png)
+
 This project provides a compact pipeline to:
 
 - extract specific face regions (nose, mouth, cheek and forehead) from reconstructed 3D meshes,
