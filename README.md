@@ -6,7 +6,7 @@ This repository contains the code and experiments accompanying our paper:
 
 This project provides a compact pipeline to:
 
-- extract specific face regions from reconstructed 3D meshes,
+- extract specific face regions (nose, mouth, cheek and forehead) from reconstructed 3D meshes,
 - compute and compare mean-curvature maps between reconstruction and ground truth,
 - project curvature-error maps into Laplace-Beltrami spectral basis,
 - cluster reconstruction error patterns and inspect demographic correlations.
