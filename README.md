@@ -45,45 +45,47 @@ pip install -r requirements.txt
 
 ## Quick Usage
 
-# Example: compute curvature maps for a given face region:
+Here is a short example of how to calculate curvature-based error maps @nose and cluster them in Laplace-Beltrami spectral space.
 
 ```python
 from utils.curvature_calculation import calculate_curvature_maps
-
-H_gt, H_rec, H_diff = calculate_curvature_maps(
-    face_region="nose",
-    template_name='basel',
-    reconstruction_data_path=reconstruction_data_path, # path to 3D meshes reconstructed with your method
-    save_path=save_path,
-    n_neighbors=3,
-    curvature_plot_save=False,
-)
-```
-
-Ground truth and reconstruction mean curvature maps and differences between them will be saved to "<save_path>" folder.
-
-\[Optional\] If you put "curvature_plot_save=True", plots of ground truth and reconstruction mean curvature maps and differences between them will be saved to "<save_path>/plots" for a given face region.
-
-# Example: spectral decomposition and clustering:
-
-```python
 from utils.spectral_clustering import (
     calculate_spectral_decomposition,
     cluster_curvature_maps,
 )
 
+# Compute curvature maps for a given face region
+H_gt, H_rec, H_diff = calculate_curvature_maps(
+    face_region="nose",
+    template_name='basel', # 3DMM template that was used for reconstruction
+    reconstruction_data_path=reconstruction_data_path, # path to 3D meshes reconstructed with your method
+    save_path=save_path,
+    n_neighbors=3,
+    curvature_plot_save=False,
+)
+
+# Spectral decomposition
 spectral_coefs, evecs = calculate_spectral_decomposition(
     diff_error_maps=H_diff,
     face_region="nose",
+    template_name='basel',
     n_eig=512,
-    method_name="basel",
+    reconstruction_data_path=reconstruction_data_path, # path to 3D meshes reconstructed with your method
+    save_path=save_path,
 )
 
+# Spectral clustering
 labels = cluster_curvature_maps(
-    n_clusters=4,
     diff_curvature_maps=H_diff,
     spectral_coefs=spectral_coefs,
     evecs=evecs,
     face_region="nose",
+    template_name='basel',
+    reconstruction_data_path=reconstruction_data_path, # path to 3D meshes reconstructed with your method
+    save_path=save_path,
 )
 ```
+
+* Ground truth and reconstruction mean curvature maps, differences between them and the respective error cluster labels will be saved to "<save_path>" folder.
+
+* \[Optional\] If you put "curvature_plot_save=True", plots of ground truth and reconstruction mean curvature maps and differences between them will be saved to "<save_path>/plots" for a given face region.
