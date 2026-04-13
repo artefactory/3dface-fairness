@@ -70,7 +70,7 @@ spectral_coefs, evecs = calculate_spectral_decomposition(
     face_region="nose",
     template_name='basel',
     n_eig=512,
-    reconstruction_data_path=reconstruction_data_path, # path to 3D meshes reconstructed with your method
+    reconstruction_data_path=reconstruction_data_path,
     save_path=save_path,
 )
 
@@ -81,7 +81,7 @@ labels = cluster_curvature_maps(
     evecs=evecs,
     face_region="nose",
     template_name='basel',
-    reconstruction_data_path=reconstruction_data_path, # path to 3D meshes reconstructed with your method
+    reconstruction_data_path=reconstruction_data_path,
     save_path=save_path,
 )
 ```
