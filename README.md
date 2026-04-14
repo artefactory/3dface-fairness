@@ -43,8 +43,6 @@ pip install -r requirements.txt
 
 3. Use the images in the "REALY_image/" folder to reconstruct 3D meshes with your method(s).
 
-4. Save reconstructed meshes as "\*.obj", where "\*" should have the same name as input images from REALY benchmark.
-
 ## Quick Usage
 
 Here is a short example of how to calculate curvature-based error maps @nose and cluster them in Laplace-Beltrami spectral space.
