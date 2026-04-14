@@ -41,7 +41,7 @@ pip install -r requirements.txt
 
 2. Unzip the benchmark file and put "REALY_scan_region/", "REALY_image/" and "REALY_HIFI3D_keypoints/" folders into "data/REALY".
 
-3. Use the images in the "REALY_image/" folder to reconstruct 3D meshes with your method(s).
+3. Use the images in the "REALY_image/" folder to reconstruct 3D meshes with your method(s) and put them into "data/" folder. 
 
 ## Quick Usage
 
