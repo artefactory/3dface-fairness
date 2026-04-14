@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 import seaborn as sns
 
-from utils.face_region_extraction import extract_region_mesh
+from utils.mesh_preprocessing import extract_region_mesh
 from utils.visualisation import plot_clusters_from_path
 
 

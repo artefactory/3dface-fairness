@@ -7,12 +7,24 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
-from utils.face_region_extraction import extract_region_mesh
+from utils.mesh_preprocessing import barycentric_coordinates_to_keypoints, align_shape, extract_region_mesh
 
 
 N_SCANS = 100
+
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 REALY_PATH = os.path.join(PROJECT_ROOT, "data", "REALY", "REALY_scan_region")
+REALY_KPT_PATH = os.path.join(PROJECT_ROOT, "data", "REALY", "REALY_HIFI3D_keypoints")
+FLAME_KPT_PATH = os.path.join(PROJECT_ROOT, "data", "3dmm_regions", "flame", "flame_barycentric_keypoints.npy")
+
+BFM_KEYPOINTS = np.array([16645, 16889, 16468, 16265, 32245, 32940, 33376, 33655, 33839,
+                          34023, 34313, 34767, 35473, 27817, 27609, 27209, 27441, 28112,
+                          28788, 29178, 29383, 29550, 30289, 30455, 30663, 31057, 31717,
+                          8162,  8178,  8188,  8193,  6516,  7244,  8205,  9164,  9884,
+                          2216,  3887,  4921,  5829,  4802,  3641, 10456, 11354, 12384,
+                          14067, 12654, 11493,  5523,  6026,  7496,  8216,  8936, 10396,
+                          10796,  9556,  8837,  8237,  7637,  6916,  5910,  7385,  8224,
+                          9065, 10538,  8830,  8230,  7630])
 
 
 def k_ring_neighbors(mesh, vertex_index, k):
@@ -192,8 +204,21 @@ def calculate_curvature_maps(
         mesh_gt_path = os.path.join(REALY_PATH, str(subject_id), f"{face_region}.obj")
 
         mesh_rec = trimesh.load(mesh_rec_path, process=False)
-        mesh_region, _ = extract_region_mesh(mesh_rec, face_region, template_name=template_name)
         mesh_gt = trimesh.load(mesh_gt_path, process=False)
+
+        # Rigidly align reconstructed mesh to the ground truth mesh
+        gt_keypoints_path = os.path.join(REALY_KPT_PATH, f"{subject_id}.obj")
+        gt_keypoints = trimesh.load(gt_keypoints_path).vertices[:68]
+
+        if template_name == 'basel':
+            rec_keypoints = mesh_rec.vertices[BFM_KEYPOINTS]
+        elif template_name == 'flame':
+            barycentric_coordinates = np.load(FLAME_KPT_PATH)
+            rec_keypoints = barycentric_coordinates_to_keypoints(mesh_rec, barycentric_coordinates)
+
+        mesh_rec_verts_aligned, _, _, _ = align_shape(mesh_rec.vertices, rec_keypoints, gt_keypoints)
+        mesh_rec_aligned = trimesh.Trimesh(mesh_rec_verts_aligned, mesh_rec.faces)
+        mesh_region, _ = extract_region_mesh(mesh_rec_aligned, face_region, template_name=template_name)
 
         H = _compute_mean_curvature(mesh_gt, n_neighbors)
         H_rec = _compute_mean_curvature(mesh_region, n_neighbors)
