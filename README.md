@@ -89,3 +89,32 @@ labels = cluster_curvature_maps(
 * Ground truth and reconstruction mean curvature maps, differences between them and the respective error cluster labels will be saved to "<save_path>" folder.
 
 * \[Optional\] If you put "curvature_plot_save=True", plots of ground truth and reconstruction mean curvature maps and differences between them will be saved to "<save_path>/plots" for a given face region.
+
+---
+
+## 📌 Note to Reviewers
+
+Thank you for reviewing our work. If you encounter any issues or need clarification while evaluating the code, please don't hesitate to contact us (our contact information is available in the paper).
+
+---
+
+## Citation
+
+If you consider this package or any of its feature useful for your research, consider citing our [paper](https://arxiv.org/abs/2607.07486).
+
+```bibtex
+@article{shilova2026discovering,
+  title={Discovering Geometric Biases in 3D Face Reconstruction: A Curvature-Aware Spectral Framework for Fairness Evaluation},
+  author={Shilova, Veronika and Malherbe, Emmanuel and Palma, Giovanni and Bokaris, Panagiotis-Alexandros and Risser, Laurent and Loubes, Jean-Michel},
+  journal={arXiv preprint arXiv:2607.07486},
+  year={2026}
+}
+```
+
+---
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+---
