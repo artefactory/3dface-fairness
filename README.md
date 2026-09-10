@@ -1,6 +1,6 @@
 This repository contains the code and experiments accompanying our paper:
 
-***"Discovering Geometric Biases in 3D Face Reconstruction: A Curvature-Aware Spectral Framework for Fairness Evaluation"***
+***"Discovering Geometric Biases in 3D Face Reconstruction: A Curvature-Aware Spectral Framework for Fairness Evaluation" (ECCV 2026)***
 
 ## Overview
 
